@@ -12,36 +12,37 @@ const LogViewer = () => {
             alert("Please enter a pod name!");
             return;
         }
+    
+
+        //Close existing WebSocket connection (if any)
+        if (ws) {
+            ws.close()
+        }
+
+        const newWs = new WebSocket("ws://54.82.107.143:31778")
+
+        newWs.onopen = () => {
+            console.log("Connected to Websocket server")
+            setIsConnected(true)
+            newWs.send(podName) // Send pod name to server
+        }
+
+        newWs.onmessage = (event) => {
+            setLogs((prevLogs) => [...prevLogs, event.data]) //Append new logs
+        }
+
+        newWs.onclose = () => {
+            console.log("WebSocket disconnected")
+            setIsConnected(false)
+        }
+
+        newWs.onerror = (error) => {
+            console.error("WebSocket error:", error)
+        }
+
+        setLogs([]) //Clear previous logs
+        setWs(newWs)
     }
-
-    //Close existing WebSocket connection (if any)
-    if (ws) {
-        ws.close()
-    }
-
-    const newWs = new WebSocket("wss://172.18.0.4:30718")
-
-    newWs.onopen = () => {
-        console.log("Connected to Websocket server")
-        setIsConnected(true)
-        newWs.send(podName) // Send pod name to server
-    }
-
-    newWs.onmessage = (event) => {
-        setLogs((prevLogs) => [...prevLogs, event.data]) //Append new logs
-    }
-
-    newWs.onclose = () => {
-        console.log("WebSocket disconnected")
-        setIsConnected(false)
-    }
-
-    newWs.onerror = (error) => {
-        console.error("WebSocket error:", error)
-    }
-
-    setLogs([]) //Clear previous logs
-    setWs(newWs)
 
     return (
         <div className="container">

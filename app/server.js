@@ -1,7 +1,7 @@
-const WebSocker = require("ws");
+const WebSocket = require("ws");
 const { exec } = require("child_process");
 
-const wss = new WebSocker.Server({port: 9000})
+const wss = new WebSocket.Server({port: 9000})
 
 wss.on("connection", (ws) => {
     console.log("Client connected");
